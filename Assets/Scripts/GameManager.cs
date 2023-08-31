@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Cinemachine;
+using DG.Tweening;
 public class GameManager : MonoBehaviour
 {
     public Transform nodes;
     public Transform enemyNodes;
     public GameObject warrior,bomber,archer;
-    public GameObject enemyWarrior;
+    public GameObject enemyWarrior, enemyArcher, enemyBomber;
     public int bonusColorRandomSpawnCount;
     public int moveCountForBonusColor;
 
@@ -35,6 +36,15 @@ public class GameManager : MonoBehaviour
     public List<Enemy> enemies;
     public int spawnEnemyCount;
     public Transform enemySpawnPos;
+    public int enemyRandom;
+
+    public int warriorHealth, archerHealth, bomberHealth;
+    public int warriorDamage, archerDamage, bomberDamage;
+
+    public Transform myBase,enemyBase;
+
+    public float baseHealth, enemyBaseHealth;
+    public TextMeshPro baseHealthText, enemyBaseHealthText;
     private void Start()
     {
         for (int i = 0; i < lines.childCount; i++)
@@ -43,6 +53,8 @@ public class GameManager : MonoBehaviour
         }
         LrEnabledFalse();
         turnCountText.text = turnCount.ToString();
+        baseHealthText.text = baseHealth.ToString();
+        enemyBaseHealthText.text = enemyBaseHealth.ToString();
     }
 
     public void LrEnabledFalse()
@@ -76,5 +88,12 @@ public class GameManager : MonoBehaviour
             enemies[i].attack = true;
         }
     }
-
+    public void EnemyBaseDotween()
+    {
+        enemyBase.transform.DOPunchScale(Vector3.one*0.1f, 0.1f, 1, 1).OnComplete(() => { enemyBase.transform.localScale = Vector3.one*0.3f; });
+    }
+    public void BaseDotween()
+    {
+        myBase.transform.DOPunchScale(Vector3.one*0.1f, 0.1f, 1, 1).OnComplete(() => { myBase.transform.localScale = Vector3.one * 0.3f; });
+    }
 }

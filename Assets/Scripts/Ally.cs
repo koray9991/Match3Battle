@@ -2,8 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.AI;
 public class Ally : MonoBehaviour
 {
+    public GameManager gm;
     float heath;
     public float maxHealth;
     public enum Type
@@ -23,10 +25,25 @@ public class Ally : MonoBehaviour
     public ParticleSystem bombParticle;
     public GameObject arrow;
     public Transform arrowDefaultPos;
+
     private void Start()
     {
-       
+        gm = FindObjectOfType<GameManager>();
         anim = GetComponent<Animator>();
+    
+        if (type == Type.Warrior)
+        {
+            maxHealth = gm.warriorHealth;
+        }
+        if (type == Type.Archer)
+        {
+            maxHealth = gm.archerHealth;
+        }
+        if (type == Type.Bomber)
+        {
+            maxHealth = gm.bomberHealth;
+        }
+        heath = maxHealth;
     }
     private void Update()
     {
@@ -39,6 +56,7 @@ public class Ally : MonoBehaviour
                 if (Vector3.Distance(transform.position, closestTarget.transform.position) > range)
                 {
                     range = defaultRange;
+                    
                     transform.position = Vector3.MoveTowards(transform.position, closestTarget.transform.position, moveSpeed);
                     var lookPos = closestTarget.transform.position - transform.position;
                     lookPos.y = 0;
@@ -70,11 +88,34 @@ public class Ally : MonoBehaviour
                     {
                         bombParticle.transform.parent = null;
                         bombParticle.Play();
-                        SetDamage(30);
+                        SetDamage(gm.bomberDamage);
                         Destroy(gameObject);
                     }
                   
 
+                }
+            }
+            else
+            {
+             
+                  transform.position = Vector3.MoveTowards(transform.position, gm.enemyBase.transform.position, moveSpeed);
+                var lookPos = gm.enemyBase.transform.position - transform.position;
+                lookPos.y = 0;
+                var rotation = Quaternion.LookRotation(lookPos);
+                transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * 50);
+                if (!runTrigger)
+                {
+                    runTrigger = true;
+                    anim.SetTrigger("Run");
+                    attackTrigger = false;
+                }
+
+                if (Vector3.Distance(transform.position, gm.enemyBase.position) < 0.2f)
+                {
+                    gameObject.SetActive(false);
+                    gm.enemyBaseHealth -= 1;
+                    gm.enemyBaseHealthText.text = gm.enemyBaseHealth.ToString();
+                    gm.EnemyBaseDotween();
                 }
             }
         }
@@ -87,10 +128,10 @@ public class Ally : MonoBehaviour
         DOVirtual.DelayedCall(0.3f, () => { arrow.transform.rotation = Quaternion.Euler(-45, 0, 0); });
         if (closestTarget != null)
         {
-            arrow.transform.DOJump(closestTarget.transform.position, 3, 1, 1).OnComplete(() => {
+            arrow.transform.DOJump(closestTarget.transform.position, 3, 1, 1).SetEase(Ease.Linear).OnComplete(() => {
                 arrow.transform.position = arrowDefaultPos.position;
                 arrow.SetActive(false);
-                SetDamage(3);
+                SetDamage(gm.archerDamage);
             });
         }
         
@@ -99,7 +140,7 @@ public class Ally : MonoBehaviour
     {
         if (type == Type.Warrior)
         {
-            damage = 5;
+            damage = gm.warriorDamage;
         }
 
         if(closestTarget != null)

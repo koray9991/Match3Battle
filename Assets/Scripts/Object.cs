@@ -104,6 +104,7 @@ public class Object : MonoBehaviour ,IPointerDownHandler,IPointerUpHandler,IPoin
             }
            
         }
+        gm.enemyRandom = Random.Range(0, 3);
         for (int i = 0; i < gm.spawnEnemyCount; i++)
         {
             for (int j = 0; j < gm.enemyNodes.childCount; j++)
@@ -113,7 +114,19 @@ public class Object : MonoBehaviour ,IPointerDownHandler,IPointerUpHandler,IPoin
                     var node = gm.enemyNodes.GetChild(j).GetComponent<Node>();
                     node.isEmpty = false;
                     var newArmy = gameObject;
-                    newArmy = Instantiate(gm.enemyWarrior, gm.enemySpawnPos.position, Quaternion.identity);
+                    
+                    if (gm.enemyRandom == 0)
+                    {
+                        newArmy = Instantiate(gm.enemyWarrior, gm.enemySpawnPos.position, Quaternion.identity);
+                    }
+                    if (gm.enemyRandom == 1)
+                    {
+                        newArmy = Instantiate(gm.enemyArcher, gm.enemySpawnPos.position, Quaternion.identity);
+                    }
+                    if (gm.enemyRandom == 2)
+                    {
+                        newArmy = Instantiate(gm.enemyBomber, gm.enemySpawnPos.position, Quaternion.identity);
+                    }
                     newArmy.transform.rotation = Quaternion.Euler(0, 180, 0);
                     newArmy.transform.DOJump(node.transform.position, 5, 1, 1).SetEase(Ease.Linear).OnComplete(() => {
                         newArmy.GetComponent<Animator>().SetTrigger("Idle");

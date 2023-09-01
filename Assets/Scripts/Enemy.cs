@@ -24,7 +24,7 @@ public class Enemy : MonoBehaviour
     public ParticleSystem bombParticle;
     public GameObject arrow;
     public Transform arrowDefaultPos;
-
+    public ParticleSystem deadParticle;
     private void Start()
     {
         gm = FindObjectOfType<GameManager>();
@@ -48,6 +48,8 @@ public class Enemy : MonoBehaviour
         heath -= value;
         if (heath <= 0)
         {
+            deadParticle.transform.parent = null;
+            deadParticle.Play();
             Destroy(gameObject);
         }
     }
@@ -116,8 +118,12 @@ public class Enemy : MonoBehaviour
                 if (Vector3.Distance(transform.position, gm.myBase.position) < 0.2f)
                 {
                     gameObject.SetActive(false);
-                    gm.baseHealth -= 1;
-                    gm.baseHealthText.text = gm.baseHealth.ToString();
+                    if (gm.baseHealth > 0)
+                    {
+                        gm.baseHealth -= 1;
+                        gm.baseHealthText.text = gm.baseHealth.ToString();
+                    }
+                    
                     gm.BaseDotween();
                 }
             }

@@ -25,7 +25,7 @@ public class Ally : MonoBehaviour
     public ParticleSystem bombParticle;
     public GameObject arrow;
     public Transform arrowDefaultPos;
-
+    public ParticleSystem deadParticle;
     private void Start()
     {
         gm = FindObjectOfType<GameManager>();
@@ -113,8 +113,12 @@ public class Ally : MonoBehaviour
                 if (Vector3.Distance(transform.position, gm.enemyBase.position) < 0.2f)
                 {
                     gameObject.SetActive(false);
-                    gm.enemyBaseHealth -= 1;
-                    gm.enemyBaseHealthText.text = gm.enemyBaseHealth.ToString();
+                    if (gm.enemyBaseHealth > 0)
+                    {
+                        gm.enemyBaseHealth -= 1;
+                        gm.enemyBaseHealthText.text = gm.enemyBaseHealth.ToString();
+                    }
+                  
                     gm.EnemyBaseDotween();
                 }
             }
@@ -177,6 +181,8 @@ public class Ally : MonoBehaviour
         heath -= value;
         if (heath <= 0)
         {
+            deadParticle.transform.parent = null;
+            deadParticle.Play();
             Destroy(gameObject);
         }
     }

@@ -15,6 +15,7 @@ public class Object : MonoBehaviour ,IPointerDownHandler,IPointerUpHandler,IPoin
         blue,
         red,
         green,
+        pink,
         bonus
     }
     private void Awake()
@@ -45,7 +46,10 @@ public class Object : MonoBehaviour ,IPointerDownHandler,IPointerUpHandler,IPoin
         {
             gm.currentColor = GameManager.Colours.green;
         }
-      
+        if (color == Colors.pink)
+        {
+            gm.currentColor = GameManager.Colours.pink;
+        }
         gm.currentObjects.Add(gameObject);
         gm.holded = true;
         gm.holdedObjectRowValue = row;
@@ -63,8 +67,13 @@ public class Object : MonoBehaviour ,IPointerDownHandler,IPointerUpHandler,IPoin
             gm.turnCountText.text = gm.turnCount.ToString();
             if (gm.turnCount <= 0)
             {
-                gm.uiPart.SetActive(false);
-                gm.fightButton.SetActive(true);
+                DOVirtual.DelayedCall(2, () => {
+                    gm.uiPart.SetActive(false);
+                    gm.fightButton.SetActive(true);
+                    gm.vCamMerge.gameObject.SetActive(false);
+                    gm.vCamFight.gameObject.SetActive(true);
+                });
+                
             }
             for (int i = 0; i < gm.currentObjects.Count; i++)
             {
@@ -73,8 +82,7 @@ public class Object : MonoBehaviour ,IPointerDownHandler,IPointerUpHandler,IPoin
                 {
                     if (gm.nodes.GetChild(j).GetComponent<Node>().isEmpty)
                     {
-                        var node = gm.nodes.GetChild(j).GetComponent<Node>();
-                        node.isEmpty = false;
+                       
                         var newArmy = gameObject;
                         if (gm.currentObjects[0].GetComponent<Object>().color == Colors.blue)
                         {
@@ -88,54 +96,86 @@ public class Object : MonoBehaviour ,IPointerDownHandler,IPointerUpHandler,IPoin
                         {
                             newArmy = Instantiate(gm.archer, gm.currentObjects[i].transform.position, Quaternion.identity);
                         }
+                        if (gm.currentObjects[0].GetComponent<Object>().color == Colors.pink)
+                        {
+                            newArmy = Instantiate(gm.healthObject, gm.currentObjects[i].transform.position, Quaternion.identity);
+                        }
                         if (gm.currentObjects[i].GetComponent<Object>().color == Colors.bonus)
                         {
                             newArmy.transform.localScale = newArmy.transform.localScale * 2;
                         }
-                        node.character = newArmy.transform;
-                        newArmy.transform.DOJump(node.transform.position, 5, 1, 1).SetEase(Ease.Linear).OnComplete(() => {
-                            newArmy.GetComponent<Animator>().SetTrigger("Idle");
-                        });
+
+                        if(gm.currentObjects[0].GetComponent<Object>().color != Colors.pink)
+                        {
+                            var node = gm.nodes.GetChild(j).GetComponent<Node>();
+                            node.isEmpty = false;
+                            node.character = newArmy.transform;
+                            newArmy.transform.DOJump(node.transform.position, 5, 1, 1).SetEase(Ease.Linear).OnComplete(() => {
+                                newArmy.GetComponent<Animator>().SetTrigger("Idle");
+                            });
+                        }
+                        else
+                        {
+                            gm.baseHealth += 1;
+                            newArmy.transform.DOJump(gm.myBase.transform.position, 5, 1, 1).SetEase(Ease.Linear).OnComplete(() => {
+                                
+                                gm.baseHealthText.text = gm.baseHealth.ToString();
+                            });
+                        }
+                       
                         break;
                     }
                 }
                 gm.currentObjects[i].GetComponent<Object>().grid.isEmpty = true;
                 Destroy(gm.currentObjects[i].gameObject);
             }
-           
-        }
-        gm.enemyRandom = Random.Range(0, 3);
-        for (int i = 0; i < gm.spawnEnemyCount; i++)
-        {
-            for (int j = 0; j < gm.enemyNodes.childCount; j++)
-            {
-                if (gm.enemyNodes.GetChild(j).GetComponent<Node>().isEmpty)
+            DOVirtual.DelayedCall(1f, () => {
+               
+                gm.enemyRandom = Random.Range(0, 3);
+                for (int i = 0; i < gm.spawnEnemyCount; i++)
                 {
-                    var node = gm.enemyNodes.GetChild(j).GetComponent<Node>();
-                    node.isEmpty = false;
-                    var newArmy = gameObject;
-                    
-                    if (gm.enemyRandom == 0)
+                  
+                    for (int j = 0; j < gm.enemyNodes.childCount; j++)
                     {
-                        newArmy = Instantiate(gm.enemyWarrior, gm.enemySpawnPos.position, Quaternion.identity);
+                        
+                        if (gm.enemyNodes.GetChild(j).GetComponent<Node>().isEmpty)
+                        {
+                         
+                            var node = gm.enemyNodes.GetChild(j).GetComponent<Node>();
+                           
+                            node.isEmpty = false;
+                         
+                            var newArmy = gm.gameObject;
+                        
+                            if (gm.enemyRandom == 0)
+                            {
+                         
+                                newArmy = Instantiate(gm.enemyWarrior, gm.enemySpawnPos.position, Quaternion.identity);
+                            }
+                            if (gm.enemyRandom == 1)
+                            {
+                          
+                                newArmy = Instantiate(gm.enemyArcher, gm.enemySpawnPos.position, Quaternion.identity);
+                            }
+                            if (gm.enemyRandom == 2)
+                            {
+                       
+                                newArmy = Instantiate(gm.enemyBomber, gm.enemySpawnPos.position, Quaternion.identity);
+                            }
+                            newArmy.transform.rotation = Quaternion.Euler(0, 180, 0);
+                            newArmy.transform.DOJump(node.transform.position, 5, 1, 1).SetEase(Ease.Linear).OnComplete(() => {
+                                newArmy.GetComponent<Animator>().SetTrigger("Idle");
+                            });
+                            break;
+                        }
                     }
-                    if (gm.enemyRandom == 1)
-                    {
-                        newArmy = Instantiate(gm.enemyArcher, gm.enemySpawnPos.position, Quaternion.identity);
-                    }
-                    if (gm.enemyRandom == 2)
-                    {
-                        newArmy = Instantiate(gm.enemyBomber, gm.enemySpawnPos.position, Quaternion.identity);
-                    }
-                    newArmy.transform.rotation = Quaternion.Euler(0, 180, 0);
-                    newArmy.transform.DOJump(node.transform.position, 5, 1, 1).SetEase(Ease.Linear).OnComplete(() => {
-                        newArmy.GetComponent<Animator>().SetTrigger("Idle");
-                    });
-                    break;
+
                 }
-            }
-                    
+            });
         }
+      
+       
+       
         gm.currentColor = GameManager.Colours.none;
         gm.currentObjects.Clear();
         gm.holded = false;

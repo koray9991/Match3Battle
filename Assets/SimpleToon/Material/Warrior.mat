@@ -26,14 +26,14 @@ Material:
     m_Floats:
     - Step1: 1
     - _Gloss: 5.37
-    - _OutlineWidth: 0.638
+    - _OutlineWidth: 0.3
     - _RimPower: 2.2
     - _RimStep: 0.668
     - _RimStepSmooth: 0.465
     - _ShadowStep: 0.68
     - _ShadowStepSmooth: 0
-    - _SpecularStep: 0.488
-    - _SpecularStepSmooth: 0.61
+    - _SpecularStep: 0
+    - _SpecularStepSmooth: 0.106
     - _Step: 0.432
     - _Step1: 0.537
     - _Step2: 0.018

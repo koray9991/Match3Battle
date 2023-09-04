@@ -50,6 +50,7 @@ public class Object : MonoBehaviour ,IPointerDownHandler,IPointerUpHandler,IPoin
         {
             gm.currentColor = GameManager.Colours.pink;
         }
+        transform.DOScale(transform.localScale * 1.5f, 0.1f).OnComplete(() => { transform.DOScale(transform.localScale / 1.5f, 0.1f); });
         gm.currentObjects.Add(gameObject);
         gm.holded = true;
         gm.holdedObjectRowValue = row;
@@ -131,7 +132,7 @@ public class Object : MonoBehaviour ,IPointerDownHandler,IPointerUpHandler,IPoin
             }
             DOVirtual.DelayedCall(1f, () => {
                
-                gm.enemyRandom = Random.Range(0, 3);
+                gm.enemyRandom = Random.Range(0, gm.enemiesList.Count);
                 for (int i = 0; i < gm.spawnEnemyCount; i++)
                 {
                   
@@ -140,28 +141,10 @@ public class Object : MonoBehaviour ,IPointerDownHandler,IPointerUpHandler,IPoin
                         
                         if (gm.enemyNodes.GetChild(j).GetComponent<Node>().isEmpty)
                         {
-                         
                             var node = gm.enemyNodes.GetChild(j).GetComponent<Node>();
-                           
                             node.isEmpty = false;
-                         
                             var newArmy = gm.gameObject;
-                        
-                            if (gm.enemyRandom == 0)
-                            {
-                         
-                                newArmy = Instantiate(gm.enemyWarrior, gm.enemySpawnPos.position, Quaternion.identity);
-                            }
-                            if (gm.enemyRandom == 1)
-                            {
-                          
-                                newArmy = Instantiate(gm.enemyArcher, gm.enemySpawnPos.position, Quaternion.identity);
-                            }
-                            if (gm.enemyRandom == 2)
-                            {
-                       
-                                newArmy = Instantiate(gm.enemyBomber, gm.enemySpawnPos.position, Quaternion.identity);
-                            }
+                            newArmy = Instantiate(gm.enemiesList[gm.enemyRandom], gm.enemySpawnPos.position, Quaternion.identity);
                             newArmy.transform.rotation = Quaternion.Euler(0, 180, 0);
                             newArmy.transform.DOJump(node.transform.position, 5, 1, 1).SetEase(Ease.Linear).OnComplete(() => {
                                 newArmy.GetComponent<Animator>().SetTrigger("Idle");
@@ -186,7 +169,7 @@ public class Object : MonoBehaviour ,IPointerDownHandler,IPointerUpHandler,IPoin
         DOVirtual.DelayedCall(0.1f,()=> tiles.FallObjects());
         DOVirtual.DelayedCall(0.15f, () => tiles.NewInstant());
         DOVirtual.DelayedCall(0.2f, () => tiles.Sibling());
-
+        gm.Bar();
        
         // 
     }
@@ -206,6 +189,7 @@ public class Object : MonoBehaviour ,IPointerDownHandler,IPointerUpHandler,IPoin
                     gm.lr[gm.currentObjects.Count - 1].enabled = true;
                     gm.lr[gm.currentObjects.Count - 1].SetPosition(0, gm.currentObjects[gm.currentObjects.Count - 2].transform.position+new Vector3(0,0,0.1f));
                     gm.lr[gm.currentObjects.Count - 1].SetPosition(1, gm.currentObjects[gm.currentObjects.Count - 1].transform.position + new Vector3(0, 0, 0.1f));
+                    transform.DOScale(transform.localScale * 1.5f, 0.1f).OnComplete(() => { transform.DOScale(transform.localScale / 1.5f, 0.1f); });
                 }
                        
             }
@@ -217,10 +201,11 @@ public class Object : MonoBehaviour ,IPointerDownHandler,IPointerUpHandler,IPoin
                     gm.currentObjects.RemoveAt(gm.currentObjects.Count - 1);
                     gm.holdedObjectRowValue = row;
                     gm.holdedObjectColumnValue = column;
-                    
+                  
                 }
             }
-          
+            gm.Bar();
+           
         }
     }
 

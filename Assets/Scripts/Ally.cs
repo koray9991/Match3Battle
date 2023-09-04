@@ -181,6 +181,7 @@ public class Ally : MonoBehaviour
         heath -= value;
         if (heath <= 0)
         {
+           
             deadParticle.transform.parent = null;
             deadParticle.Play();
             Destroy(gameObject);

@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using Cinemachine;
 using DG.Tweening;
+using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public Transform nodes;
@@ -12,7 +13,7 @@ public class GameManager : MonoBehaviour
     public GameObject enemyWarrior, enemyArcher, enemyBomber;
     public int bonusColorRandomSpawnCount;
     public int moveCountForBonusColor;
-
+    public List<GameObject> enemiesList;
    public enum Colours
     {
         none,
@@ -62,6 +63,28 @@ public class GameManager : MonoBehaviour
 
     float countControlTimer;
     public GameObject healthObject;
+    public List<Image> purpleImages,greenImages,yellowImages,pinkImages;
+    public int money;
+    public TextMeshPro moneyText;
+    public TextMeshProUGUI moneyTextGUI;
+
+    public int warriorLevel;
+    public TextMeshProUGUI warriorLevelText;
+    public int warriorCost;
+    public TextMeshProUGUI warriorCostText;
+
+    public int archerLevel;
+    public TextMeshProUGUI archerLevelText;
+    public int archerCost;
+    public TextMeshProUGUI archerCostText;
+
+    public int bomberLevel;
+    public TextMeshProUGUI bomberLevelText;
+    public int bomberCost;
+    public TextMeshProUGUI bomberCostText;
+
+    public int earnedMoney;
+    public TextMeshProUGUI earnedMoneyText;
     private void Start()
     {
         for (int i = 0; i < lines.childCount; i++)
@@ -73,10 +96,170 @@ public class GameManager : MonoBehaviour
         baseHealthText.text = baseHealth.ToString();
         enemyBaseHealthText.text = enemyBaseHealth.ToString();
         countControlTimer = 1;
+        EarnMoney(0);
+
+        Prefs();
+    }
+    public void EarnMoney(int value)
+    {
+        money=PlayerPrefs.GetInt("money");
+        money += value;
+        PlayerPrefs.SetInt("money", money);
+        moneyText.text = money.ToString();
+        moneyTextGUI.text = money.ToString();
+
+    }
+  public void Prefs()
+    {
+        warriorLevel = PlayerPrefs.GetInt("warriorLevel");
+        if (warriorLevel == 0) { warriorLevel = 1; PlayerPrefs.SetInt("warriorLevel", warriorLevel); }
+        warriorLevelText.text = "LEVEL " + warriorLevel;
+
+        warriorCost = PlayerPrefs.GetInt("warriorCost");
+        if (warriorCost == 0) { warriorCost = 500; PlayerPrefs.SetInt("warriorCost", warriorCost); }
+        warriorCostText.text = warriorCost.ToString();
+
+        warriorHealth = PlayerPrefs.GetInt("warriorHealth");
+        if (warriorHealth == 0) { warriorHealth = 50; PlayerPrefs.SetInt("warriorHealth", warriorHealth); }
+
+        warriorDamage = PlayerPrefs.GetInt("warriorDamage");
+        if (warriorDamage == 0) { warriorDamage = 4; PlayerPrefs.SetInt("warriorDamage", warriorDamage); }
+
+
+        archerLevel = PlayerPrefs.GetInt("archerLevel");
+        if (archerLevel == 0) { archerLevel = 1; PlayerPrefs.SetInt("archerLevel", archerLevel); }
+        archerLevelText.text = "LEVEL " + archerLevel;
+
+        archerCost = PlayerPrefs.GetInt("archerCost");
+        if (archerCost == 0) { archerCost = 500; PlayerPrefs.SetInt("archerCost", archerCost); }
+        archerCostText.text = archerCost.ToString();
+
+        archerHealth = PlayerPrefs.GetInt("archerHealth");
+        if (archerHealth == 0) { archerHealth = 20; PlayerPrefs.SetInt("archerHealth", archerHealth); }
+
+        archerDamage = PlayerPrefs.GetInt("archerDamage");
+        if (archerDamage == 0) { archerDamage = 6; PlayerPrefs.SetInt("archerDamage", archerDamage); }
+
+
+
+
+
+        bomberLevel = PlayerPrefs.GetInt("bomberLevel");
+        if (bomberLevel == 0) { bomberLevel = 1; PlayerPrefs.SetInt("bomberLevel", bomberLevel); }
+        bomberLevelText.text = "LEVEL " + bomberLevel;
+
+        bomberCost = PlayerPrefs.GetInt("bomberCost");
+        if (bomberCost == 0) { bomberCost = 500; PlayerPrefs.SetInt("bomberCost", bomberCost); }
+        bomberCostText.text = bomberCost.ToString();
+
+        bomberHealth = PlayerPrefs.GetInt("bomberHealth");
+        if (bomberHealth == 0) { bomberHealth = 20; PlayerPrefs.SetInt("bomberHealth", bomberHealth); }
+
+        bomberDamage = PlayerPrefs.GetInt("bomberDamage");
+        if (bomberDamage == 0) { bomberDamage = 50; PlayerPrefs.SetInt("bomberDamage", bomberDamage); }
+    }
+    public void WarriorUpgrade()
+    {
+        if (money >= warriorCost)
+        {
+            EarnMoney(-warriorCost);
+
+            warriorLevel += 1;
+            PlayerPrefs.SetInt("warriorLevel", warriorLevel);
+            warriorLevelText.text = "LEVEL " + warriorLevel;
+            warriorCost += 100;
+            PlayerPrefs.SetInt("warriorCost", warriorCost);
+            warriorCostText.text = warriorCost.ToString();
+
+            warriorHealth += 5; 
+            PlayerPrefs.SetInt("warriorHealth", warriorHealth);
+
+            warriorDamage += 1; 
+            PlayerPrefs.SetInt("warriorDamage", warriorDamage);
+        }
+    }
+    public void ArcherUpgrade()
+    {
+        if (money >= archerCost)
+        {
+            EarnMoney(-archerCost);
+
+            archerLevel += 1;
+            PlayerPrefs.SetInt("archerLevel", archerLevel);
+            archerLevelText.text = "LEVEL " + archerLevel;
+            archerCost += 100;
+            PlayerPrefs.SetInt("archerCost", archerCost);
+            archerCostText.text = archerCost.ToString();
+
+            archerHealth += 4;
+            PlayerPrefs.SetInt("archerHealth", archerHealth);
+
+            archerDamage += 1;
+            PlayerPrefs.SetInt("archerDamage", archerDamage);
+        }
+    }
+
+    public void BomberUpgrade()
+    {
+        if (money >= bomberCost)
+        {
+            EarnMoney(-bomberCost);
+
+            bomberLevel += 1;
+            PlayerPrefs.SetInt("bomberLevel", bomberLevel);
+            bomberLevelText.text = "LEVEL " + bomberLevel;
+            bomberCost += 100;
+            PlayerPrefs.SetInt("bomberCost", bomberCost);
+            bomberCostText.text = bomberCost.ToString();
+
+            bomberHealth += 4;
+            PlayerPrefs.SetInt("bomberHealth", bomberHealth);
+
+            bomberDamage += 1;
+            PlayerPrefs.SetInt("bomberDamage", bomberDamage);
+        }
+    }
+    public void Bar()
+    {
+        switch (currentColor)
+        {
+            case Colours.none:
+                purpleImages[0].fillAmount = currentObjects.Count;
+                purpleImages[1].fillAmount = currentObjects.Count;
+                greenImages[0].fillAmount = (float)currentObjects.Count / 20;
+                greenImages[1].fillAmount = (float)currentObjects.Count / 20;
+                yellowImages[0].fillAmount = (float)currentObjects.Count / 20;
+                yellowImages[1].fillAmount = (float)currentObjects.Count / 20;
+                pinkImages[0].fillAmount = (float)currentObjects.Count / 20;
+                pinkImages[1].fillAmount = (float)currentObjects.Count / 20;
+                break;
+            case Colours.blue:
+                purpleImages[0].fillAmount = (float)currentObjects.Count / 20;
+                purpleImages[1].fillAmount = (float)currentObjects.Count / 20;
+                break;
+            case Colours.green:
+                greenImages[0].fillAmount = (float)currentObjects.Count / 20;
+                greenImages[1].fillAmount = (float)currentObjects.Count / 20;
+                break;
+            case Colours.red:
+                yellowImages[0].fillAmount = (float)currentObjects.Count / 20;
+                yellowImages[1].fillAmount = (float)currentObjects.Count / 20;
+                break;
+            case Colours.pink:
+                pinkImages[0].fillAmount = (float)currentObjects.Count / 20;
+                pinkImages[1].fillAmount = (float)currentObjects.Count / 20;
+                break;
+        }
     }
     private void Update()
     {
-
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            EarnMoney(1000);
+        }
+       
+        
+      
         CountControl();
         if (fightMode)
         {

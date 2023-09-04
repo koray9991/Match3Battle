@@ -25,6 +25,7 @@ public class Enemy : MonoBehaviour
     public GameObject arrow;
     public Transform arrowDefaultPos;
     public ParticleSystem deadParticle;
+    public Transform coinParent;
     private void Start()
     {
         gm = FindObjectOfType<GameManager>();
@@ -48,6 +49,18 @@ public class Enemy : MonoBehaviour
         heath -= value;
         if (heath <= 0)
         {
+            for (int i = 0; i < coinParent.childCount; i++)
+            {
+                var Mycoin = coinParent.GetChild(i);
+                Mycoin.gameObject.SetActive(true);
+                Mycoin.parent = null;
+                Mycoin.transform.rotation = Quaternion.Euler(Random.Range(0, 180), Random.Range(0, 180), Random.Range(0, 180));
+                Mycoin.GetComponent<Rigidbody>().AddForce(Random.Range(-50f, 50f), Random.Range(200f, 400f), Random.Range(-50f, 50f));
+               
+            }
+            gm.EarnMoney(10);
+            gm.earnedMoney += 10;
+            gm.earnedMoneyText.text = gm.earnedMoney.ToString();
             deadParticle.transform.parent = null;
             deadParticle.Play();
             Destroy(gameObject);

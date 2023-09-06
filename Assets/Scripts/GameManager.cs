@@ -5,6 +5,7 @@ using TMPro;
 using Cinemachine;
 using DG.Tweening;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public Transform nodes;
@@ -45,12 +46,16 @@ public class GameManager : MonoBehaviour
 
     public Transform myBase,enemyBase;
 
+    public Transform fractureEnemyBase,fractureMyBase;
+
+    public ParticleSystem explosionEnemyBase,explosionMyBase;
+
     public float baseHealth, enemyBaseHealth;
     public TextMeshPro baseHealthText, enemyBaseHealthText;
 
     public bool fightMode;
     public int aliveAllies, aliveEnemies;
-    public GameObject winPanel;
+    public GameObject winPanel,failPanel;
 
     public int warriorCount, archerCount, bomberCount;
     public TextMeshProUGUI warriorCountText, archerCountText, bomberCountText;
@@ -66,7 +71,7 @@ public class GameManager : MonoBehaviour
     public List<Image> purpleImages,greenImages,yellowImages,pinkImages;
     public int money;
     public TextMeshPro moneyText;
-    public TextMeshProUGUI moneyTextGUI;
+    public TextMeshProUGUI moneyTextGUI,moneyTextGUI2;
 
     public int warriorLevel;
     public TextMeshProUGUI warriorLevelText;
@@ -84,7 +89,13 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI bomberCostText;
 
     public int earnedMoney;
-    public TextMeshProUGUI earnedMoneyText;
+    public TextMeshProUGUI earnedMoneyText,earnedMoneyText2;
+
+    public bool enemyTurn;
+    public GameObject enemyTurnCircle;
+    public Image enemyTurnAmount;
+    public GameObject enemyTurnLock;
+    
     private void Start()
     {
         for (int i = 0; i < lines.childCount; i++)
@@ -109,7 +120,15 @@ public class GameManager : MonoBehaviour
         moneyTextGUI.text = money.ToString();
 
     }
-  public void Prefs()
+    public void NextLevelButton()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+    public void RestartButton()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+    public void Prefs()
     {
         warriorLevel = PlayerPrefs.GetInt("warriorLevel");
         if (warriorLevel == 0) { warriorLevel = 1; PlayerPrefs.SetInt("warriorLevel", warriorLevel); }
@@ -396,10 +415,18 @@ public class GameManager : MonoBehaviour
     }
     public void EnemyBaseDotween()
     {
-        enemyBase.transform.DOPunchScale(Vector3.one*0.1f, 0.1f, 1, 1).OnComplete(() => { enemyBase.transform.localScale = Vector3.one*0.3f; });
+        if (enemyBaseHealth > 0)
+        {
+            enemyBase.transform.DOPunchScale(Vector3.one * 0.1f, 0.1f, 1, 1).OnComplete(() => { enemyBase.transform.localScale = Vector3.one * 0.3f; });
+        }
+       
     }
     public void BaseDotween()
     {
-        myBase.transform.DOPunchScale(Vector3.one*0.1f, 0.1f, 1, 1).OnComplete(() => { myBase.transform.localScale = Vector3.one * 0.3f; });
+        if (baseHealth > 0)
+        {
+            myBase.transform.DOPunchScale(Vector3.one * 0.1f, 0.1f, 1, 1).OnComplete(() => { myBase.transform.localScale = Vector3.one * 0.3f; });
+        }
+        
     }
 }

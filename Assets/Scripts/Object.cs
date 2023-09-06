@@ -30,7 +30,7 @@ public class Object : MonoBehaviour ,IPointerDownHandler,IPointerUpHandler,IPoin
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (color == Colors.bonus || gm.turnCount <= 0)
+        if (color == Colors.bonus || gm.turnCount <= 0 || gm.enemyTurn)
         {
             return;
         }
@@ -68,7 +68,7 @@ public class Object : MonoBehaviour ,IPointerDownHandler,IPointerUpHandler,IPoin
             gm.turnCountText.text = gm.turnCount.ToString();
             if (gm.turnCount <= 0)
             {
-                DOVirtual.DelayedCall(2, () => {
+                DOVirtual.DelayedCall(3, () => {
                     gm.uiPart.SetActive(false);
                     gm.fightButton.SetActive(true);
                     gm.vCamMerge.gameObject.SetActive(false);
@@ -130,15 +130,19 @@ public class Object : MonoBehaviour ,IPointerDownHandler,IPointerUpHandler,IPoin
                 gm.currentObjects[i].GetComponent<Object>().grid.isEmpty = true;
                 Destroy(gm.currentObjects[i].gameObject);
             }
-            DOVirtual.DelayedCall(1f, () => {
-               
+            gm.enemyTurn = true;
+            gm.enemyTurnCircle.SetActive(true);
+            gm.enemyTurnAmount.fillAmount = 0;
+            gm.enemyTurnLock.SetActive(true);
+            DOTween.To(x => gm.enemyTurnAmount.fillAmount = x, gm.enemyTurnAmount.fillAmount, 1, 3).OnComplete(() => {
                 gm.enemyRandom = Random.Range(0, gm.enemiesList.Count);
+                gm.spawnEnemyCount = Random.Range(3, 7);
                 for (int i = 0; i < gm.spawnEnemyCount; i++)
                 {
-                  
+
                     for (int j = 0; j < gm.enemyNodes.childCount; j++)
                     {
-                        
+
                         if (gm.enemyNodes.GetChild(j).GetComponent<Node>().isEmpty)
                         {
                             var node = gm.enemyNodes.GetChild(j).GetComponent<Node>();
@@ -154,7 +158,14 @@ public class Object : MonoBehaviour ,IPointerDownHandler,IPointerUpHandler,IPoin
                     }
 
                 }
+                gm.enemyTurnCircle.SetActive(false);
+                gm.enemyTurn = false;
+                gm.enemyTurnLock.SetActive(false);
             });
+           
+               
+              
+          
         }
       
        

@@ -117,6 +117,17 @@ public class Ally : MonoBehaviour
                     {
                         gm.enemyBaseHealth -= 1;
                         gm.enemyBaseHealthText.text = gm.enemyBaseHealth.ToString();
+                        if (gm.enemyBaseHealth <= 0)
+                        {
+                            for (int i = 0; i < gm.fractureEnemyBase.childCount; i++)
+                            {
+                                gm.fractureEnemyBase.GetChild(i).gameObject.AddComponent<Rigidbody>();
+                                gm.fractureEnemyBase.GetChild(i).gameObject.AddComponent<BoxCollider>();
+                                gm.fractureEnemyBase.GetChild(i).GetComponent<Rigidbody>().AddForce(Random.Range(-300, 300), Random.Range(0, 300), Random.Range(-300, 300));
+                                gm.enemyBaseHealthText.enabled = false;
+                                gm.explosionEnemyBase.Play();
+                            }  
+                        }
                     }
                   
                     gm.EnemyBaseDotween();

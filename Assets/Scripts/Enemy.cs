@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+
 public class Enemy : MonoBehaviour
 {
     public GameManager gm;
@@ -61,6 +62,7 @@ public class Enemy : MonoBehaviour
             gm.EarnMoney(10);
             gm.earnedMoney += 10;
             gm.earnedMoneyText.text = gm.earnedMoney.ToString();
+            gm.earnedMoneyText2.text = gm.earnedMoney.ToString();
             deadParticle.transform.parent = null;
             deadParticle.Play();
             Destroy(gameObject);
@@ -109,6 +111,7 @@ public class Enemy : MonoBehaviour
                         bombParticle.transform.parent = null;
                         bombParticle.Play();
                         SetDamage(gm.bomberDamage);
+                        gm.EarnMoney(10);
                         Destroy(gameObject);
                     }
 
@@ -135,6 +138,19 @@ public class Enemy : MonoBehaviour
                     {
                         gm.baseHealth -= 1;
                         gm.baseHealthText.text = gm.baseHealth.ToString();
+                        if (gm.baseHealth <= 0)
+                        {
+                            for (int i = 0; i < gm.fractureMyBase.childCount; i++)
+                            {   
+                                gm.fractureMyBase.GetChild(i).gameObject.AddComponent<Rigidbody>();
+                                gm.fractureMyBase.GetChild(i).gameObject.AddComponent<BoxCollider>();
+                                gm.fractureMyBase.GetChild(i).GetComponent<Rigidbody>().AddForce(Random.Range(-300, 300), Random.Range(0, 300), Random.Range(-300, 300));
+                                gm.baseHealthText.enabled = false;
+                                gm.explosionMyBase.Play();
+
+                                DOVirtual.DelayedCall(2, () => { gm.failPanel.SetActive(true); });
+                            }
+                        }
                     }
                     
                     gm.BaseDotween();
@@ -192,4 +208,6 @@ public class Enemy : MonoBehaviour
 
         }
     }
+
+   
 }

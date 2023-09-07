@@ -33,15 +33,16 @@ public class Enemy : MonoBehaviour
         anim = GetComponent<Animator>();
         if (type == Type.Warrior)
         {
-            maxHealth = gm.warriorHealth;
+            maxHealth = 50;
         }
         if (type == Type.Archer)
         {
-            maxHealth = gm.archerHealth;
+            maxHealth = 20;
+            anim.SetFloat("speed", Random.Range(0.7f,1.3f));
         }
         if (type == Type.Bomber)
         {
-            maxHealth = gm.bomberHealth;
+            maxHealth = 20;
         }
         heath = maxHealth;
     }
@@ -65,7 +66,9 @@ public class Enemy : MonoBehaviour
             gm.earnedMoneyText2.text = gm.earnedMoney.ToString();
             deadParticle.transform.parent = null;
             deadParticle.Play();
-            Destroy(gameObject);
+            anim.SetTrigger("Death");
+            gameObject.AddComponent<Destroy>();
+            Destroy(GetComponent<Enemy>());
         }
     }
     private void Update()
@@ -110,7 +113,7 @@ public class Enemy : MonoBehaviour
                     {
                         bombParticle.transform.parent = null;
                         bombParticle.Play();
-                        SetDamage(gm.bomberDamage);
+                        SetDamage(50);
                         gm.EarnMoney(10);
                         Destroy(gameObject);
                     }
@@ -169,7 +172,7 @@ public class Enemy : MonoBehaviour
             arrow.transform.DOJump(closestTarget.transform.position, 3, 1, 1).SetEase(Ease.Linear).OnComplete(() => {
                 arrow.transform.position = arrowDefaultPos.position;
                 arrow.SetActive(false);
-                SetDamage(gm.archerDamage);
+                SetDamage(6);
             });
         }
 
@@ -178,12 +181,15 @@ public class Enemy : MonoBehaviour
     {
         if (type == Type.Warrior)
         {
-            damage = gm.warriorDamage;
+            damage = 4;
         }
 
         if (closestTarget != null)
         {
-            closestTarget.GetComponent<Ally>().GetDamage(damage);
+            if (closestTarget.GetComponent<Ally>())
+            {
+                closestTarget.GetComponent<Ally>().GetDamage(damage);
+            }
         }
 
     }

@@ -26,6 +26,7 @@ public class Ally : MonoBehaviour
     public GameObject arrow;
     public Transform arrowDefaultPos;
     public ParticleSystem deadParticle;
+    public bool isBig;
     private void Start()
     {
         gm = FindObjectOfType<GameManager>();
@@ -38,10 +39,15 @@ public class Ally : MonoBehaviour
         if (type == Type.Archer)
         {
             maxHealth = gm.archerHealth;
+            anim.SetFloat("speed", Random.Range(0.7f, 1.3f));
         }
         if (type == Type.Bomber)
         {
             maxHealth = gm.bomberHealth;
+        }
+        if (isBig)
+        {
+            maxHealth = maxHealth * 2;
         }
         heath = maxHealth;
     }
@@ -91,8 +97,6 @@ public class Ally : MonoBehaviour
                         SetDamage(gm.bomberDamage);
                         Destroy(gameObject);
                     }
-                  
-
                 }
             }
             else
@@ -129,7 +133,6 @@ public class Ally : MonoBehaviour
                             }  
                         }
                     }
-                  
                     gm.EnemyBaseDotween();
                 }
             }
@@ -160,7 +163,11 @@ public class Ally : MonoBehaviour
 
         if(closestTarget != null)
         {
-            closestTarget.GetComponent<Enemy>().GetDamage(damage);
+            if (closestTarget.GetComponent<Enemy>())
+            {
+                closestTarget.GetComponent<Enemy>().GetDamage(damage);
+            }
+           
         }
         
     }
@@ -195,7 +202,10 @@ public class Ally : MonoBehaviour
            
             deadParticle.transform.parent = null;
             deadParticle.Play();
-            Destroy(gameObject);
+            anim.SetTrigger("Death");
+            gameObject.AddComponent<Destroy>();
+            Destroy(GetComponent<Ally>());
+         //   Destroy(gameObject);
         }
     }
 }

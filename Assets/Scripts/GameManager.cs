@@ -44,6 +44,8 @@ public class GameManager : MonoBehaviour
     public int warriorHealth, archerHealth, bomberHealth;
     public int warriorDamage, archerDamage, bomberDamage;
 
+ 
+
     public Transform myBase,enemyBase;
 
     public Transform fractureEnemyBase,fractureMyBase;

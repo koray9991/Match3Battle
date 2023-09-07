@@ -104,6 +104,7 @@ public class Object : MonoBehaviour ,IPointerDownHandler,IPointerUpHandler,IPoin
                         if (gm.currentObjects[i].GetComponent<Object>().color == Colors.bonus)
                         {
                             newArmy.transform.localScale = newArmy.transform.localScale * 2;
+                            newArmy.GetComponent<Ally>().isBig = true;
                         }
 
                         if(gm.currentObjects[0].GetComponent<Object>().color != Colors.pink)
@@ -111,7 +112,7 @@ public class Object : MonoBehaviour ,IPointerDownHandler,IPointerUpHandler,IPoin
                             var node = gm.nodes.GetChild(j).GetComponent<Node>();
                             node.isEmpty = false;
                             node.character = newArmy.transform;
-                            newArmy.transform.DOJump(node.transform.position, 5, 1, 1).SetEase(Ease.Linear).OnComplete(() => {
+                            newArmy.transform.DOJump(node.transform.position, 3, 1, 1).SetEase(Ease.Linear).OnComplete(() => {
                                 newArmy.GetComponent<Animator>().SetTrigger("Idle");
                             });
                         }
@@ -150,7 +151,7 @@ public class Object : MonoBehaviour ,IPointerDownHandler,IPointerUpHandler,IPoin
                             var newArmy = gm.gameObject;
                             newArmy = Instantiate(gm.enemiesList[gm.enemyRandom], gm.enemySpawnPos.position, Quaternion.identity);
                             newArmy.transform.rotation = Quaternion.Euler(0, 180, 0);
-                            newArmy.transform.DOJump(node.transform.position, 5, 1, 1).SetEase(Ease.Linear).OnComplete(() => {
+                            newArmy.transform.DOJump(node.transform.position, 3, 1, 1).SetEase(Ease.Linear).OnComplete(() => {
                                 newArmy.GetComponent<Animator>().SetTrigger("Idle");
                             });
                             break;
@@ -177,9 +178,9 @@ public class Object : MonoBehaviour ,IPointerDownHandler,IPointerUpHandler,IPoin
         gm.holdedObjectColumnValue = 0;
         gm.moveCountForBonusColor += 1;
         gm.LrEnabledFalse();
-        DOVirtual.DelayedCall(0.1f,()=> tiles.FallObjects());
-        DOVirtual.DelayedCall(0.15f, () => tiles.NewInstant());
-        DOVirtual.DelayedCall(0.2f, () => tiles.Sibling());
+        DOVirtual.DelayedCall(0.2f,()=> tiles.FallObjects());
+        DOVirtual.DelayedCall(0.5f, () => tiles.NewInstant());
+        DOVirtual.DelayedCall(1f, () => tiles.Sibling());
         gm.Bar();
        
         // 
